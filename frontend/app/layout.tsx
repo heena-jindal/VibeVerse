@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jet
 
 export const metadata: Metadata = {
   title: 'VibeVerse - AI Wellness for Introverted Students',
-description: 'VibeVerse helps introverted and socially anxious students navigate social situations through AI-powered mood detection, daily challenges, and mindfulness tools.',
+  description: 'VibeVerse helps introverted and socially anxious students navigate social situations through AI-powered mood detection, daily challenges, and mindfulness tools.',
   generator: 'v0.app',
   icons: {
     icon: [
