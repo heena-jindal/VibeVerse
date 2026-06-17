@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - SocialCompanion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/>
+        <rect width="18" height="18" x="3" y="4" rx="2"/>
+        <circle cx="12" cy="10" r="2"/>
+        <line x1="8" x2="8" y1="2" y2="4"/>
+        <line x1="16" x2="16" y1="2" y2="4"/>
+      </svg>
+      SocialCompanion
+    </a>
+    
+    <div class="navbar-user">
+      <span class="navbar-username">Hi, <span id="usernameDisplay">{{ username }}</span></span>
+      <div class="navbar-links" style="display: flex;">
+        <a href="/challenges">Challenges</a>
+        <a href="/journal">Journal</a>
+        <a href="/history">History</a>
+        <button id="logoutBtn" class="btn btn-ghost btn-sm">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <a href="/progress" class="nav-btn" style="background:#f0efff;color:#534AB7">Progress</a>
+  <a href="/progress" class="nav-btn" style="background:#f0efff;color:#534AB7">Progress</a>
+  <a href="/games"    class="nav-btn" style="background:#f0efff;color:#534AB7">Games</a>
+  <a href="/music"    class="nav-btn" style="background:#f0efff;color:#534AB7">Music</a>
+  <a href="/movies"   class="nav-btn" style="background:#f0efff;color:#534AB7">Movies</a>
+
+  <!-- Chat Container -->
+  <div class="chat-container">
+    <!-- Situation Selector Bar -->
+    <div class="situation-bar">
+      <button class="pill active" data-situation="in_class">In Class</button>
+      <button class="pill" data-situation="canteen">Canteen</button>
+      <button class="pill" data-situation="first_day">First Day</button>
+      <button class="pill" data-situation="group_project">Group Project</button>
+      <button class="pill" data-situation="presentation">Presentation</button>
+    </div>
+
+    <!-- Chat Messages Area -->
+    <div class="chat-messages" id="chatMessages">
+      <!-- Welcome message -->
+      <div class="chat-message bot">
+        <div class="chat-message-content">
+          <div class="chat-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/>
+              <rect width="18" height="18" x="3" y="4" rx="2"/>
+              <circle cx="12" cy="10" r="2"/>
+            </svg>
+          </div>
+          <div class="chat-bubble">
+            Hello! I am your vibeverse. I am here to help you navigate social situations with confidence. 
+            Select a situation above and tell me how you are feeling or what you are experiencing. I am here to listen and support you.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input Bar -->
+    <div class="chat-input-bar">
+      <input 
+        type="text" 
+        class="chat-input" 
+        id="chatInput" 
+        placeholder="Type your message here..."
+        autocomplete="off"
+      >
+      <button class="chat-send-btn" id="sendBtn" aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatMessages = document.getElementById('chatMessages');
+      const chatInput = document.getElementById('chatInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const situationBtns = document.querySelectorAll('.situation-bar .pill');
+      
+      let currentSituation = 'in_class';
+      let isWaitingForResponse = false;
+
+      // Situation selector
+      situationBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          situationBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          currentSituation = this.dataset.situation;
+        });
+      });
+
+      // Send message
+      async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message || isWaitingForResponse) return;
+
+        // Add user message
+        addMessage(message, 'user');
+        chatInput.value = '';
+        isWaitingForResponse = true;
+
+        // Show typing indicator
+        const typingIndicator = showTypingIndicator();
+
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: message,
+              situation: currentSituation
+            }),
+          });
+
+          // Remove typing indicator
+          typingIndicator.remove();
+
+          if (response.redirected) {
+            window.location.href = '/login';
+            return;
+          }
+
+          const data = await response.json();
+
+          // Add bot response with mood
+          addMessage(data.reply || data.suggestion, 'bot', data.mood);
+
+        } catch (error) {
+          typingIndicator.remove();
+          addMessage('Sorry, I could not process your message. Please try again.', 'bot');
+        }
+
+        isWaitingForResponse = false;
+      }
+
+      // Add message to chat
+      function addMessage(text, sender, mood = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message ' + sender;
+
+        let moodBadge = '';
+        if (mood && sender === 'bot') {
+          const moodClass = getMoodClass(mood);
+          moodBadge = '<div class="chat-message-mood"><span class="badge ' + moodClass + '">mood: ' + escapeHtml(mood) + '</span></div>';
+        }
+
+        if (sender === 'bot') {
+          messageDiv.innerHTML = moodBadge + 
+            '<div class="chat-message-content">' +
+              '<div class="chat-avatar">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                  '<path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/>' +
+                  '<rect width="18" height="18" x="3" y="4" rx="2"/>' +
+                  '<circle cx="12" cy="10" r="2"/>' +
+                '</svg>' +
+              '</div>' +
+              '<div class="chat-bubble">' + escapeHtml(text) + '</div>' +
+            '</div>';
+        } else {
+          messageDiv.innerHTML = 
+            '<div class="chat-message-content">' +
+              '<div class="chat-bubble">' + escapeHtml(text) + '</div>' +
+            '</div>';
+        }
+
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+      }
+
+      // Get mood badge class
+      function getMoodClass(mood) {
+        const moodLower = mood.toLowerCase().replace(' ', '-');
+        const moodMap = {
+          'very-anxious': 'badge-anxious',
+          'very anxious': 'badge-anxious',
+          'anxious': 'badge-anxious',
+          'nervous': 'badge-nervous',
+          'confused': 'badge-confused',
+          'okay': 'badge-okay',
+          'confident': 'badge-confident'
+        };
+        return moodMap[moodLower] || 'badge-nervous';
+      }
+
+      // Show typing indicator
+      function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message bot';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = 
+          '<div class="chat-message-content">' +
+            '<div class="chat-avatar">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/>' +
+                '<rect width="18" height="18" x="3" y="4" rx="2"/>' +
+                '<circle cx="12" cy="10" r="2"/>' +
+              '</svg>' +
+            '</div>' +
+            '<div class="chat-typing"><span></span><span></span><span></span></div>' +
+          '</div>';
+        chatMessages.appendChild(typingDiv);
+        scrollToBottom();
+        return typingDiv;
+      }
+
+      // Scroll to bottom
+      function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Escape HTML to prevent XSS
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Event listeners
+      sendBtn.addEventListener('click', sendMessage);
+
+      chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+
+      // Logout
+      logoutBtn.addEventListener('click', async function() {
+        try {
+          await fetch('/api/logout', { method: 'POST' });
+          window.location.href = '/login';
+        } catch (error) {
+          window.location.href = '/login';
+        }
+      });
+
+      // Focus input on load
+      chatInput.focus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat History - SocialCompanion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/>
+        <rect width="18" height="18" x="3" y="4" rx="2"/>
+        <circle cx="12" cy="10" r="2"/>
+        <line x1="8" x2="8" y1="2" y2="4"/>
+        <line x1="16" x2="16" y1="2" y2="4"/>
+      </svg>
+      SocialCompanion
+    </a>
+    
+    <div class="navbar-user">
+      <span class="navbar-username">Hi, <span id="usernameDisplay">{{ username }}</span></span>
+      <div class="navbar-links" style="display: flex;">
+        <a href="/chat">Chat</a>
+        <a href="/challenges">Challenges</a>
+        <a href="/journal">Journal</a>
+        <button id="logoutBtn" class="btn btn-ghost btn-sm">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page">
+    <div class="container container-md">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">Chat History</h1>
+        <p class="page-subtitle">Review your past conversations and mood patterns</p>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loading">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Content (hidden until loaded) -->
+      <div id="historyContent" style="display: none;">
+        <!-- Mood Summary Cards -->
+        <div class="mood-summary" id="moodSummary"></div>
+
+        <!-- Recent Conversations -->
+        <h2 class="journal-entries-title">Recent Conversations</h2>
+        <div class="history-list" id="historyList"></div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+          </svg>
+        </div>
+        <h3 class="empty-state-title">No chat history yet</h3>
+        <p class="empty-state-description">Start a conversation to see your history here.</p>
+        <a href="/chat" class="btn btn-primary mt-4">Start Chatting</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

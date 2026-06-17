@@ -1,0 +1,7 @@
+flask
+flask-cors
+textblob
+requests
+gunicorn
+python-dotenv
+google-genai

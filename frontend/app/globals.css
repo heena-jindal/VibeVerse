@@ -1,0 +1,295 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Gen-Z pastel: lavender-cream base, vibrant lilac primary */
+  --background: #fdf6ff;
+  --foreground: #2d2a3e;
+  --card: #ffffff;
+  --card-foreground: #2d2a3e;
+  --popover: #ffffff;
+  --popover-foreground: #2d2a3e;
+  --primary: #a78bfa;
+  --primary-foreground: #ffffff;
+  --secondary: #f3eefc;
+  --secondary-foreground: #6b5b95;
+  --muted: #f5f0fa;
+  --muted-foreground: #9890ac;
+  --accent: #7dedc0;
+  --accent-foreground: #0a2e22;
+  --destructive: #ff8fa3;
+  --destructive-foreground: #5c1f1f;
+  --border: #ece3f7;
+  --input: #f5f0fa;
+  --ring: #a78bfa;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 1rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2d2a3e;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3eefc;
+  --sidebar-accent-foreground: #6b5b95;
+  --sidebar-border: #ece3f7;
+  --sidebar-ring: #a78bfa;
+
+  /* Vibrant pastel mood colors */
+  --mood-anxious: #ffe4e9;
+  --mood-anxious-text: #d6566e;
+  --mood-nervous: #fff4d6;
+  --mood-nervous-text: #d9a441;
+  --mood-confused: #e3f0ff;
+  --mood-confused-text: #5b8def;
+  --mood-okay: #f0edfc;
+  --mood-okay-text: #9890ac;
+  --mood-confident: #dcfce7;
+  --mood-confident-text: #34a871;
+
+  /* Vibrant pastel difficulty colors */
+  --difficulty-easy-bg: #dcfce7;
+  --difficulty-easy-text: #2f9e6e;
+  --difficulty-medium-bg: #fff4d6;
+  --difficulty-medium-text: #c28a1f;
+  --difficulty-hard-bg: #ffe0e6;
+  --difficulty-hard-text: #d4506a;
+}
+
+.dark {
+  /* Deep plum dark mode with glowing lilac/mint */
+  --background: #1a1625;
+  --foreground: #f0e9ff;
+  --card: #261f38;
+  --card-foreground: #f0e9ff;
+  --popover: #261f38;
+  --popover-foreground: #f0e9ff;
+  --primary: #c4b5fd;
+  --primary-foreground: #1a1625;
+  --secondary: #352b4d;
+  --secondary-foreground: #d8cfef;
+  --muted: #2e2640;
+  --muted-foreground: #a89dc2;
+  --accent: #6ee7b7;
+  --accent-foreground: #0a2e22;
+  --destructive: #ff9db0;
+  --destructive-foreground: #1a1625;
+  --border: #3d3354;
+  --input: #352b4d;
+  --ring: #c4b5fd;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: #261f38;
+  --sidebar-foreground: #f0e9ff;
+  --sidebar-primary: #c4b5fd;
+  --sidebar-primary-foreground: #1a1625;
+  --sidebar-accent: #352b4d;
+  --sidebar-accent-foreground: #d8cfef;
+  --sidebar-border: #3d3354;
+  --sidebar-ring: #c4b5fd;
+
+  /* Dark mode mood colors */
+  --mood-anxious: #3d2530;
+  --mood-anxious-text: #ff9db0;
+  --mood-nervous: #3d3420;
+  --mood-nervous-text: #ffd580;
+  --mood-confused: #20304d;
+  --mood-confused-text: #8ab4ff;
+  --mood-okay: #2e2640;
+  --mood-okay-text: #c4b5fd;
+  --mood-confident: #1f3d2e;
+  --mood-confident-text: #6ee7b7;
+
+  /* Dark mode difficulty colors */
+  --difficulty-easy-bg: #1f3d2e;
+  --difficulty-easy-text: #6ee7b7;
+  --difficulty-medium-bg: #3d3420;
+  --difficulty-medium-text: #ffd580;
+  --difficulty-hard-bg: #3d2530;
+  --difficulty-hard-text: #ff9db0;
+}
+
+@theme inline {
+  --font-sans: 'DM Sans', 'Inter', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-12px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out forwards;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass {
+  background: rgba(38, 31, 56, 0.7);
+  border: 1px solid rgba(61, 51, 84, 0.3);
+}
+
+/* Soft shadows */
+.shadow-soft {
+  box-shadow: 0 4px 20px -2px rgba(167, 139, 250, 0.10),
+              0 2px 8px -2px rgba(167, 139, 250, 0.08);
+}
+
+.dark .shadow-soft {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35),
+              0 2px 8px -2px rgba(0, 0, 0, 0.25);
+}
+
+/* Gradient backgrounds — dreamy purple to pink to peach */
+.gradient-primary {
+  background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #fdba74 100%);
+}
+
+.gradient-calm {
+  background: linear-gradient(135deg, #f3eefc 0%, #ffe4e9 50%, #dcfce7 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #7dedc0 0%, #5b8def 100%);
+}
+
+/* Text gradients */
+.text-gradient {
+  background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .text-gradient {
+  background: linear-gradient(135deg, #c4b5fd 0%, #ff9db0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hover transitions */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px -8px rgba(167, 139, 250, 0.35);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 12px 40px -8px rgba(196, 181, 253, 0.3);
+}
+
+/* Decorative elements */
+.decorative-blur {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.dark .decorative-blur {
+  opacity: 0.25;
+}

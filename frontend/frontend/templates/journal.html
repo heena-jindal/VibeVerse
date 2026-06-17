@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journal - SocialCompanion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/>
+        <rect width="18" height="18" x="3" y="4" rx="2"/>
+        <circle cx="12" cy="10" r="2"/>
+        <line x1="8" x2="8" y1="2" y2="4"/>
+        <line x1="16" x2="16" y1="2" y2="4"/>
+      </svg>
+      SocialCompanion
+    </a>
+    
+    <div class="navbar-user">
+      <span class="navbar-username">Hi, <span id="usernameDisplay">{{ username }}</span></span>
+      <div class="navbar-links" style="display: flex;">
+        <a href="/chat">Chat</a>
+        <a href="/challenges">Challenges</a>
+        <a href="/history">History</a>
+        <button id="logoutBtn" class="btn btn-ghost btn-sm">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page">
+    <div class="container container-md">
+      <!-- Page Header -->
+      <div class="journal-header">
+        <h1 class="page-title">My Journal</h1>
+        <span class="journal-count" id="entryCount">0 entries</span>
+      </div>
+
+      <!-- Write Section -->
+      <div class="journal-write card">
+        <div class="journal-write-label">How are you feeling today?</div>
+        
+        <!-- Mood Pills -->
+        <div class="journal-mood-pills pill-group">
+          <button class="pill" data-mood="Reflective">Reflective</button>
+          <button class="pill" data-mood="Happy">Happy</button>
+          <button class="pill" data-mood="Nervous">Nervous</button>
+          <button class="pill" data-mood="Sad">Sad</button>
+          <button class="pill" data-mood="Proud">Proud</button>
+          <button class="pill" data-mood="Confused">Confused</button>
+        </div>
+
+        <!-- Textarea -->
+        <textarea 
+          class="form-input journal-textarea mt-4" 
+          id="journalContent" 
+          placeholder="Write about your thoughts, experiences, or feelings..."
+          maxlength="2000"
+        ></textarea>
+
+        <!-- Footer -->
+        <div class="journal-footer">
+          <span class="char-counter" id="charCounter">0/2000</span>
+          <button class="btn btn-primary" id="saveBtn">Save Entry</button>
+        </div>
+
+        <!-- Message -->
+        <div id="writeMessage" class="message mt-3"></div>
+      </div>
+
+      <!-- Past Entries Section -->
+      <div class="mt-6">
+        <h2 class="journal-entries-title">Past Entries</h2>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Entries List -->
+        <div class="journal-entries" id="entriesList" style="display: none;"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <line x1="10" y1="9" x2="8" y2="9"/>
+            </svg>
+          </div>
+          <h3 class="empty-state-title">No journal entries yet</h3>
+          <p class="empty-state-description">Start writing to track your thoughts and feelings.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Confirm Delete Dialog -->
+  <div class="dialog-overlay" id="deleteDialog">
+    <div class="dialog">
+      <h3 class="dialog-title">Delete Entry?</h3>
+      <p class="dialog-message">Are you sure you want to delete this journal entry? This action cannot be undone.</p>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary btn-sm" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-sm" id="confirmDeleteBtn" style="background-color: #dc2626; color: white;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='journal.js') }}"></script>
+</body>
+</html>
