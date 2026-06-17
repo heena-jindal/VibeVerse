@@ -63,7 +63,8 @@ TextBlob
 Sentiment Analysis
 External APIs
 Spotify Web API
-TMDb API
+
+
 🏗️ System Architecture
 User Input
      │
@@ -84,6 +85,7 @@ SQLite Database
      │
      ▼
 Personalized Response
+
 🎯 Target Audience
 School Students
 College Students
@@ -104,6 +106,7 @@ API Integration
 Authentication Flows
 Software Architecture
 Secure Coding Practices
+
 🔮 Future Improvements
 User Authentication
 Personalized User Profiles
@@ -113,13 +116,7 @@ Mobile Application (Android & iOS)
 Community Support Groups
 Advanced Analytics Dashboard
 Cloud Deployment
-📸 Screenshots
 
-Home Page
-AI Chat Interface
-Journal Section
-Music Recommendations
-Daily Challenges Dashboard
 
 👩‍💻 Author
 
