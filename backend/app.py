@@ -25,6 +25,7 @@ from auth import (init_users, register_user,
                   login_user, get_current_user, login_required)
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True, origins=["https://vibe-verse.vercel.app", "http://localhost:3000"])
 
 IS_PROD = os.environ.get('IS_PRODUCTION', 'false').lower() == 'true'
 
