@@ -9,7 +9,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { History, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const API = ""
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
 
 interface ChatHistory {
   mood: string
