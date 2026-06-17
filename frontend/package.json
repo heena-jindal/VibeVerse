@@ -37,6 +37,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.2.2",
+    "@tailwindcss/postcss": "^4.3.1",
     "@vercel/analytics": "^1.4.0",
     "autoprefixer": "^10.4.20",
     "chart.js": "^4.4.1",
@@ -66,7 +67,7 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
     "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.16",
+    "tailwindcss": "^4.3.1",
     "typescript": "^5.7.2"
   }
 }
