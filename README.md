@@ -1,18 +1,14 @@
 🌟 VibeVerse - AI Companion for Students
 
-An AI-powered student wellness platform designed to help introverted students adapt to new environments, manage emotions, build confidence, and discover personalized entertainment recommendations.
+An AI-powered student wellness platform that helps students manage emotions, build confidence, and discover personalized music and movie recommendations through sentiment analysis and intelligent content suggestions.
+
+🔗 Live Demo: https://vibe-verse-awt00cs5t-heena-aiml24-5180s-projects.vercel.app/games
 
 📌 Problem Statement
 
 Many students struggle when entering new schools, colleges, or social environments. Feelings of anxiety, nervousness, loneliness, and social discomfort often make it difficult to interact with others and adapt to new surroundings.
 
 Moodora aims to act as a digital companion that understands a student's emotional state and provides personalized support through mood analysis, journaling, challenges, and curated entertainment recommendations.
-
-# 🌟 Moodora - AI Companion for Students
-
-An AI-powered student wellness platform that helps students manage emotions, build confidence, and discover personalized music and movie recommendations through sentiment analysis and intelligent content suggestions.
-
-🔗 Live Demo: https://vibe-verse-awt00cs5t-heena-aiml24-5180s-projects.vercel.app/games
 
 
 🚀 Features
