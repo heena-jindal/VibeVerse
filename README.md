@@ -8,6 +8,13 @@ Many students struggle when entering new schools, colleges, or social environmen
 
 Moodora aims to act as a digital companion that understands a student's emotional state and provides personalized support through mood analysis, journaling, challenges, and curated entertainment recommendations.
 
+# 🌟 Moodora - AI Companion for Students
+
+An AI-powered student wellness platform that helps students manage emotions, build confidence, and discover personalized music and movie recommendations through sentiment analysis and intelligent content suggestions.
+
+🔗 Live Demo: https://vibe-verse-awt00cs5t-heena-aiml24-5180s-projects.vercel.app/games
+
+
 🚀 Features
 🧠 AI Mood Detection
 Analyzes user messages using sentiment analysis.
