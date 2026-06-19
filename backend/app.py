@@ -113,23 +113,19 @@ def handle_chat():
     polarity = TextBlob(user_message).sentiment.polarity
 
     # Step 2: Try Gemini first for human-like response
-    reply = None
-    
-    if os.environ.get('GEMINI_API_KEY'):
-        try:
-            from chatbot import get_gemini_response
-            reply = get_gemini_response(user_message, situation, mood)
-        except Exception as e:
-            print(f"Gemini error: {e}")
-            reply = None
-
-    # Step 3: Fall back to suggestion engine if Gemini fails/unavailable
-    if not reply:
-        suggestion = get_suggestion(mood, situation)
-        reply = (
-            f"I can sense you're feeling {mood} right now. "
-            f"That's completely okay. {suggestion}"
-        )
+    # Step 2: Use hf_chatbot module for response
+try:
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), 'hf_chatbot'))
+    from hf_module import motivational_chat
+    reply = motivational_chat(user_message, session_id="vibeverse")
+except Exception as e:
+    print(f"Chatbot error: {e}")
+    suggestion = get_suggestion(mood, situation)
+    reply = (
+        f"I can sense you're feeling {mood} right now. "
+        f"That's completely okay. {suggestion}"
+    )
 
     # Step 4: Save to database
     save_chat(user_message, mood, situation, reply, user_id=user['id'])
