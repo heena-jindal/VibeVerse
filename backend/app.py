@@ -108,34 +108,21 @@ def handle_chat():
     user_message = data.get('message', '')
     situation    = data.get('situation', 'in_class')
 
-    # Step 1: Detect mood using TextBlob (keep this — it's fast and free)
+    # Step 1: Detect mood
     mood     = detect_mood(user_message)
     polarity = TextBlob(user_message).sentiment.polarity
 
-    # Step 2: Try Gemini first for human-like response
     # Step 2: Use hf_chatbot module for response
-try:
-    import sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'hf_chatbot'))
-    from hf_module import motivational_chat
-    reply = motivational_chat(user_message, session_id="vibeverse")
-except Exception as e:
-    print(f"Chatbot error: {e}")
-    suggestion = get_suggestion(mood, situation)
-    reply = (
-        f"I can sense you're feeling {mood} right now. "
-        f"That's completely okay. {suggestion}"
-    )
-
-    # Step 4: Save to database
-    save_chat(user_message, mood, situation, reply, user_id=user['id'])
-    save_mood(mood, polarity, user_id=user['id'])
-
-    return jsonify({
-        "mood":    mood,
-        "reply":   reply,
-        "suggestion": reply
-    })
+    try:
+        import sys
+        sys.path.append(os.path.join(os.path.dirname(__file__), 'hf_chatbot'))
+        from hf_module import motivational_chat
+        reply = motivational_chat(user_message, session_id="vibeverse")
+    except Exception as e:
+        print(f"Chatbot error: {e}")
+        suggestion = get_suggestion(mood, situation)
+        reply = (
+            f"I can sense
 
 @app.route('/api/history', methods=['GET'])
 @login_required
