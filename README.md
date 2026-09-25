@@ -1,7 +1,7 @@
 # 🌟 VibeVerse - AI Companion for Students
 
 An AI-powered student wellness platform that helps students manage emotions, 
-build confidence, and discover personalized music and movie recommendations 
+build confidence, and discover personalized music recommendations 
 through sentiment analysis and an intelligent conversational AI companion.
 
 🔗 **Live Demo:** https://vibe-verse.vercel.app
