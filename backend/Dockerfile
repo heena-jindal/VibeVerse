@@ -15,8 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY --chown=user . .
 
 # Match the port used by app.py
-EXPOSE 5000
+EXPOSE 10000
 
 # Runtime configuration (DATABASE_URL, GROQ_API_KEY, SECRET_KEY, FRONTEND_URL)
 # is supplied through the container environment and read by app.py.
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} app:app"]
