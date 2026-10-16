@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+backend/.env
+.env
+backend/database.db
+backend/*.db
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env*.local
+frontend/.vercel/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+**/hf_chatbot/.env
+
+venv/
+node_modules/
+.next/
+.env
+.env.local
+__pycache__/
+*.pyc
+database.db
