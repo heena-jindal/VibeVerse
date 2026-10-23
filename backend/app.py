@@ -8,7 +8,6 @@ from flask_limiter.util import get_remote_address
 import os
 from datetime import timedelta
 
-from rag.graph import chat_graph
 from rag.vector_store import (
     save_journal_entry, get_journal_entries, delete_journal_entry,
     get_journal_stats, get_recent_chats, get_mood_counts, get_latest_mood,
@@ -100,6 +99,9 @@ def api_login_check():
 @limiter.limit("20 per minute")
 @login_required
 def handle_chat():
+    # Chat dependencies are large; don't load them while serving auth routes.
+    from rag.graph import chat_graph
+
     user = get_current_user()
     data = request.get_json()
     user_message = data.get('message', '')
