@@ -8,15 +8,17 @@ why schema.sql uses vector(384). If you swap models, update that dimension
 too.
 """
 
-from sentence_transformers import SentenceTransformer
-
 _model = None
 
 
-def get_model() -> SentenceTransformer:
+def get_model():
     """Lazy-load the model once and reuse it (loading is slow, embedding is fast)."""
     global _model
     if _model is None:
+        # Keep the large PyTorch/transformers stack out of processes that only
+        # serve lightweight routes such as registration and login.
+        from sentence_transformers import SentenceTransformer
+
         _model = SentenceTransformer("BAAI/bge-small-en-v1.5")
     return _model
 
