@@ -9,7 +9,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from pgvector.psycopg2 import register_vector
 
-from rag.embeddings import embed_text
+
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
@@ -38,17 +38,23 @@ def save_journal_entry(user_id: int, content: str, mood_label: str | None = None
     return new_id
 
 
-def save_chat_message(user_id: int, role: str, content: str, mood_label: str | None = None) -> int:
-    embedding = embed_text(content)
+def save_chat_message(
+    user_id: int,
+    role: str,
+    content: str,
+    mood_label: str | None = None,
+) -> int:
+    # Chat history is loaded directly; generating a local embedding here
+    # can exceed Render's memory limit.
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO chat_messages (user_id, role, content, mood_label, embedding)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO chat_messages (user_id, role, content, mood_label)
+                VALUES (%s, %s, %s, %s)
                 RETURNING id
                 """,
-                (user_id, role, content, mood_label, embedding),
+                (user_id, role, content, mood_label),
             )
             new_id = cur.fetchone()[0]
         conn.commit()
