@@ -23,16 +23,15 @@ def get_connection():
 # ---------- Writing ----------
 
 def save_journal_entry(user_id: int, content: str, mood_label: str | None = None) -> int:
-    embedding = embed_text(content)
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO journal_entries (user_id, content, mood_label, embedding)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO journal_entries (user_id, content, mood_label)
+                VALUES (%s, %s, %s)
                 RETURNING id
                 """,
-                (user_id, content, mood_label, embedding),
+                (user_id, content, mood_label),
             )
             new_id = cur.fetchone()[0]
         conn.commit()
