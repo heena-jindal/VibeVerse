@@ -29,6 +29,9 @@ def _similarity_from_distance(distance: float) -> float:
     return 1 - (distance / 2)
 
 
+from rag.vector_store import get_journal_entries
+
+
 def retrieve_memories(
     user_id: int,
     query_text: str,
@@ -37,41 +40,39 @@ def retrieve_memories(
     similarity_weight: float = 0.7,
     recency_weight: float = 0.3,
 ) -> list[dict]:
-    query_embedding = embed_text(query_text)
-    candidates = []
+    # Use recent journal entries as context without loading the local
+    # embedding model. Recent chat turns are loaded separately.
+    if "journal" not in sources or top_k <= 0:
+        return []
 
-    if "journal" in sources:
-        for row in search_journal_entries(user_id, query_embedding, limit=20):
-            if (1 - row["distance"]) < MIN_SIMILARITY:
-                continue
-            sim = _similarity_from_distance(row["distance"])
-            rec = _recency_weight(row["created_at"])
-            score = similarity_weight * sim + recency_weight * rec
-            candidates.append({
-                "source": "journal",
-                "content": row["content"],
-                "mood_label": row["mood_label"],
-                "created_at": row["created_at"],
-                "score": score,
-            })
+    rows = get_journal_entries(user_id, limit=top_k)
+    return [
+        {
+            "source": "journal",
+            "content": row["content"],
+            "mood_label": row["mood_label"],
+            "created_at": row["created_at"],
+            "score": 1.0,
+        }
+        for row in rows
+    ]
 
-    if "chat" in sources:
-        for row in search_chat_messages(user_id, query_embedding, limit=20):
-            if (1 - row["distance"]) < MIN_SIMILARITY:
-                continue
-            sim = _similarity_from_distance(row["distance"])
-            rec = _recency_weight(row["created_at"])
-            score = similarity_weight * sim + recency_weight * rec
-            candidates.append({
-                "source": "chat",
-                "content": row["content"],
-                "mood_label": row["mood_label"],
-                "created_at": row["created_at"],
-                "score": score,
-            })
 
-    candidates.sort(key=lambda c: c["score"], reverse=True)
-    return candidates[:top_k]
+def format_memories_for_prompt(memories: list[dict]) -> str:
+    if not memories:
+        return "No relevant past entries found."
+
+    lines = []
+    for memory in memories:
+        label = (
+            f" (mood: {memory['mood_label']})"
+            if memory.get("mood_label")
+            else ""
+        )
+        lines.append(
+            f"- [{memory['source']}{label}] {memory['content']}"
+        )
+    return "\n".join(lines)
 
 
 def format_memories_for_prompt(memories: list[dict]) -> str:
