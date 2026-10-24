@@ -30,7 +30,7 @@ Chat with an empathetic AI, journal your day, track your mood, and build confide
 
 <p align="center">
   <a href="docs/demo.mp4">
-    <img src="docs/demo-preview.gif" alt="VibeVerse demo preview. Click for the full video with sound." width="800">
+    <img src="demo-preview.gif" alt="VibeVerse demo preview. Click for the full video with sound." width="800">
   </a>
   <br>
   <sub>▶️ Click the preview to watch the full 2.5-minute walkthrough (login, challenges, journal, music, games, history, chat)</sub>
@@ -54,17 +54,17 @@ GitHub uploads it and gives you a https://github.com/user-attachments/assets/...
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/screenshots/challenges.png" alt="Daily challenge and streak" />
+      <img src="challenges.png" alt="Daily challenge and streak" />
       <br><b>Daily challenge and streak</b>
     </td>
     <td align="center">
-      <img src="docs/screenshots/music.png" alt="Mood-based music" />
+      <img src="music.png" alt="Mood-based music" />
       <br><b>Mood-based music with Spotify player</b>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/screenshots/progress.png" alt="Progress page" />
+      <img src="progress.png" alt="Progress page" />
       <br><b>Confidence score and streak</b>
     </td>
     <td align="center">
