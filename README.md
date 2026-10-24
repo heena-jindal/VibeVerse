@@ -44,7 +44,7 @@ GitHub uploads it and gives you a https://github.com/user-attachments/assets/...
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/screenshots/chat.png" alt="AI chat with memory" />
+      <img src="chat.png" alt="AI chat with memory" />
       <br><b>AI chat that remembers your journal</b>
     </td>
     <td align="center" width="50%">
