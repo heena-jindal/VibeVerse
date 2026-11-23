@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: social-companion-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: IS_PRODUCTION
+        value: true
+      - key: TMDB_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

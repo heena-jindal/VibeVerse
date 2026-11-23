@@ -1,0 +1,16 @@
+
+requests
+gunicorn
+flask
+flask-cors
+flask-limiter
+python-dotenv
+werkzeug
+psycopg2-binary
+pgvector
+sentence-transformers
+langchain
+langchain-groq
+langgraph
+pydantic
+langsmith
