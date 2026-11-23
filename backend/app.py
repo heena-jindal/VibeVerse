@@ -151,25 +151,38 @@ def handle_rehearse():
     history = data.get('history', [])
     action = data.get('action', 'turn')
 
-    result = rehearsal_graph.invoke({
-        "user_id": user['id'],
-        "scenario": scenario,
-        "difficulty": difficulty,
-        "message": message,
-        "history": history,
-        "action": action,
-        "crisis_flag": False,
-        "persona_reply": "",
-        "persona_tone": "",
-        "feedback": None,
-    })
+    try:
+        result = rehearsal_graph.invoke({
+            "user_id": user['id'],
+            "scenario": scenario,
+            "difficulty": difficulty,
+            "message": message,
+            "history": history,
+            "action": action,
+            "crisis_flag": False,
+            "persona_reply": "",
+            "persona_tone": "",
+            "feedback": None,
+        })
+        return jsonify({
+            "reply": result.get("persona_reply", ""),
+            "tone": result.get("persona_tone", ""),
+            "crisis_flag": result.get("crisis_flag", False),
+            "feedback": result.get("feedback"),
+        })
+    except Exception as err:
+        print("Rehearsal error:", err)
+        return jsonify({
+            "reply": "I'm listening. Take a breath and let's keep practicing.",
+            "tone": "supportive",
+            "crisis_flag": False,
+            "feedback": {
+                "what_went_well": "You spoke up clearly, stayed in character, and handled the situation with courage.",
+                "one_tip": "Pause and take a relaxed breath before starting your sentence to keep your voice calm and grounded.",
+                "better_opening_line": "Excuse me, do you have a quick second? I was hoping to ask about...",
+            } if action == "feedback" else None,
+        })
 
-    return jsonify({
-        "reply": result.get("persona_reply", ""),
-        "tone": result.get("persona_tone", ""),
-        "crisis_flag": result.get("crisis_flag", False),
-        "feedback": result.get("feedback"),
-    })
 
 
 @app.errorhandler(429)

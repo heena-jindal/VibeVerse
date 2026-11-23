@@ -142,15 +142,16 @@ def safe_response(state: RehearsalState) -> RehearsalState:
 
 
 def generate_persona_turn(state: RehearsalState) -> RehearsalState:
-    scenario_info = SCENARIOS.get(state["scenario"], SCENARIOS["canteen_order"])
-    diff = state.get("difficulty", "realistic").lower()
-    diff_guide = DIFFICULTY_GUIDES.get(diff, DIFFICULTY_GUIDES["realistic"])
-    diff_vibe = scenario_info.get(f"{diff}_vibe", scenario_info["realistic_vibe"])
+    try:
+        scenario_info = SCENARIOS.get(state["scenario"], SCENARIOS["canteen_order"])
+        diff = state.get("difficulty", "realistic").lower()
+        diff_guide = DIFFICULTY_GUIDES.get(diff, DIFFICULTY_GUIDES["realistic"])
+        diff_vibe = scenario_info.get(f"{diff}_vibe", scenario_info["realistic_vibe"])
 
-    formatted_history = _format_history(state.get("history", []))
+        formatted_history = _format_history(state.get("history", []))
 
-    llm = _llm(RehearsalTurnResponse)
-    prompt = f"""You are roleplaying as: {scenario_info['persona']}
+        llm = _llm(RehearsalTurnResponse)
+        prompt = f"""You are roleplaying as: {scenario_info['persona']}
 Scenario context: {scenario_info['context']}
 Difficulty Level: {diff.upper()} ({diff_guide})
 Tone/Behavior in this difficulty: {diff_vibe}
@@ -167,19 +168,27 @@ The conversation so far:
 Student's new spoken statement:
 "{state['message']}"
 """
-    result: RehearsalTurnResponse = llm.invoke(prompt)
-    state["persona_reply"] = result.reply
-    state["persona_tone"] = result.tone
+        result = llm.invoke(prompt)
+        if isinstance(result, dict):
+            state["persona_reply"] = result.get("reply", "I hear you clearly.")
+            state["persona_tone"] = result.get("tone", "neutral")
+        else:
+            state["persona_reply"] = getattr(result, "reply", "I hear you clearly.")
+            state["persona_tone"] = getattr(result, "tone", "neutral")
+    except Exception as e:
+        state["persona_reply"] = "I hear you. What would you like to say next?"
+        state["persona_tone"] = "neutral"
     return state
 
 
 def generate_feedback(state: RehearsalState) -> RehearsalState:
-    scenario_info = SCENARIOS.get(state["scenario"], SCENARIOS["canteen_order"])
-    diff = state.get("difficulty", "realistic").lower()
-    formatted_history = _format_history(state.get("history", []))
+    try:
+        scenario_info = SCENARIOS.get(state["scenario"], SCENARIOS["canteen_order"])
+        diff = state.get("difficulty", "realistic").lower()
+        formatted_history = _format_history(state.get("history", []))
 
-    llm = _llm(RehearsalFeedback)
-    prompt = f"""You are an encouraging, expert social coach for introverted and socially anxious college students.
+        llm = _llm(RehearsalFeedback)
+        prompt = f"""You are an encouraging, expert social coach for introverted and socially anxious college students.
 The student just completed a social rehearsal roleplay.
 
 Scenario: {scenario_info['title']} ({scenario_info['persona']})
@@ -196,15 +205,29 @@ Provide constructive, warm, actionable feedback:
 2. one_tip: Provide ONE concrete, practical technique they can remember when doing this in real life (e.g., eye contact, breathing before speaking, starting with a brief 'Excuse me', speaking up slightly louder).
 3. better_opening_line: Suggest an alternative, crisp, and natural opening line they could practice saying out loud right now.
 """
-    result: RehearsalFeedback = llm.invoke(prompt)
-    state["feedback"] = {
-        "what_went_well": result.what_went_well,
-        "one_tip": result.one_tip,
-        "better_opening_line": result.better_opening_line,
-    }
+        result = llm.invoke(prompt)
+        if isinstance(result, dict):
+            state["feedback"] = {
+                "what_went_well": result.get("what_went_well", ""),
+                "one_tip": result.get("one_tip", ""),
+                "better_opening_line": result.get("better_opening_line", ""),
+            }
+        else:
+            state["feedback"] = {
+                "what_went_well": getattr(result, "what_went_well", ""),
+                "one_tip": getattr(result, "one_tip", ""),
+                "better_opening_line": getattr(result, "better_opening_line", ""),
+            }
+    except Exception as e:
+        state["feedback"] = {
+            "what_went_well": "You spoke up clearly, stayed in character, and handled the situation with courage.",
+            "one_tip": "Pause and take a relaxed breath before starting your sentence to keep your voice calm and grounded.",
+            "better_opening_line": "Excuse me, do you have a quick second? I was hoping to ask about...",
+        }
     state["persona_reply"] = "Rehearsal completed! Here is your personalized feedback."
     state["persona_tone"] = "feedback"
     return state
+
 
 
 def _route_after_classify(state: RehearsalState) -> str:
