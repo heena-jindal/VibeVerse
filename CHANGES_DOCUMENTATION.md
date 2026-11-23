@@ -1,78 +1,98 @@
-# VibeVerse — Social Rehearsal Feature Documentation
+# VibeVerse — Master Project Changes & Upgrade Documentation
 
 **Project Name**: VibeVerse — AI Companion for Introverted & Socially Anxious Students  
-**Feature**: Social Rehearsal Mode (In-Character Roleplay, Voice I/O, Predict vs. Reality, and Structured Feedback)  
-**Hackathon Presentation Ready**: Yes  
+**Repository**: [github.com/heena-jindal/VibeVerse](https://github.com/heena-jindal/VibeVerse)  
+**Live Frontend**: [https://frontend-two-sepia-yhuaaettcp.vercel.app/](https://frontend-two-sepia-yhuaaettcp.vercel.app/)  
+**Live Backend API**: [https://vibeverse-yybw.onrender.com](https://vibeverse-yybw.onrender.com)  
+**Documentation Version**: Complete Master Changelog (All Upgrades Verified Live)  
 
 ---
 
 ## 1. Executive Summary & Purpose
 
-College students suffering from social anxiety often experience catastrophic anticipatory anxiety before everyday social interactions (ordering at a busy canteen, asking a professor a doubt, speaking up in group projects).
+College students who struggle with introversion and social anxiety often experience **catastrophic anticipatory fear** before routine interactions — such as ordering food at a crowded canteen, approaching a professor after a lecture, speaking up in group projects, or introducing themselves to a classmate.
 
-**The Social Rehearsal Feature** introduces an AI-powered sandbox that applies **Cognitive Behavioral Therapy (CBT) exposure techniques**:
-1. **Anticipatory Forecast ("Predict")**: The student estimates how terrifying the interaction will be (1 to 10).
-2. **Realistic Roleplay Simulation**: The student speaks or chats with an AI persona matching the specific scenario and chosen difficulty level (*Gentle*, *Realistic*, *Tough*).
-3. **Voice Interaction**: Native browser Speech-to-Text (microphone input) and Text-to-Speech (persona speaking aloud).
-4. **Reality Testing ("Reality")**: After completing the dialogue, the student rates how difficult it *actually* was.
-5. **The Mindset Shift**: The system calculates the **"Anxiety Gap"** to prove quantitatively that anticipatory dread is usually 2x to 3x higher than reality.
-6. **Actionable Feedback**: The AI coach delivers structured, positive reinforcement, one practical tip, and an improved opening line to practice.
+This project upgrade adds **Social Rehearsal Mode**, an interactive exposure therapy sandbox based on **Cognitive Behavioral Therapy (CBT)** principles:
+1. **Anticipatory Forecast ("Predict Slider")**: The student estimates how difficult or scary the interaction will be on a scale of 1 to 10.
+2. **In-Character Roleplay Simulation**: The student chats or speaks with an AI persona matching their chosen scenario and difficulty (*Gentle*, *Realistic*, *Tough*).
+3. **Hands-Free Voice Interaction**:
+   - **Speech-to-Text (STT)**: Microphone button using the browser's native Web Speech API.
+   - **Text-to-Speech (TTS)**: The persona speaks their replies out loud using native browser `speechSynthesis`.
+4. **Reality Testing ("Reality Slider")**: Immediately after the rehearsal, the student rates how difficult it *actually* felt.
+5. **The Mindset Shift ("The Anxiety Gap")**: The system calculates the point difference between predicted fear and actual reality, proving to the student that their catastrophic expectations were far worse than the real event.
+6. **Actionable Coaching**: Delivers structured feedback: *What Went Well*, *One Actionable Tip*, and *A Better Opening Line* to practice.
 
 ---
 
-## 2. System Architecture
+## 2. Complete Architecture Diagram
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Frontend (Next.js 15 + React 19)"]
-        UI["/rehearse Page"]
-        Mic["Web Speech API (STT Microphone)"]
-        Speaker["SpeechSynthesis (TTS Persona Voice)"]
-        PredictSlider["1. Predict Anxiety Slider (1-10)"]
-        RealitySlider["2. Reality Difficulty Slider (1-10)"]
-        Card["3. Predict vs Reality & Feedback Cards"]
+    subgraph Frontend ["Frontend (Next.js 15 + React 19 on Vercel)"]
+        Nav["Updated Navbar (/chat, /rehearse, /challenges, /journal, etc.)"]
+        RehearseUI["Rehearsal Page (/rehearse)"]
+        STT["Speech-to-Text Microphone (Web Speech API)"]
+        TTS["Voice Output (SpeechSynthesis)"]
+        Sliders["Predict vs Reality Sliders (CBT Technique)"]
+        FeedbackCard["Structured Feedback & Anxiety Gap Card"]
     end
 
-    subgraph Backend ["Backend (Flask + Gunicorn)"]
-        API["POST /api/rehearse"]
-        Limiter["Flask-Limiter (30 req/min)"]
-        Auth["Session Cookie Auth"]
+    subgraph Backend ["Backend (Flask + Gunicorn on Render)"]
+        API["REST API (/api/chat, /api/rehearse, /api/login, etc.)"]
+        Limiter["Flask-Limiter (Rate Limiting)"]
+        Auth["Session Cookie & Password Hashing (Werkzeug)"]
 
-        subgraph LangGraph ["LangGraph Rehearsal Workflow"]
-            Crisis["1. classify_intent (Crisis Gate)"]
-            SafePath["Crisis Safe Path (Tele-MANAS 14416)"]
-            Persona["2. generate_persona_turn (In-Character Roleplay)"]
-            Feedback["3. generate_feedback (Typed Evaluation)"]
+        subgraph LangGraphWorkflows ["LangGraph Orchestration"]
+            ChatGraph["Chatbot Pipeline (Crisis Gate -> RAG Retrieve -> 3-Sentence Generator)"]
+            RehearseGraph["Rehearsal Pipeline (Crisis Gate -> Persona Roleplay -> Structured Feedback)"]
         end
     end
 
-    subgraph LLM ["Inference Provider"]
-        Groq["Groq API (openai/gpt-oss-120b)"]
+    subgraph DataAndAI ["Database & AI Engine"]
+        Postgres[("Neon Cloud PostgreSQL + pgvector")]
+        Groq["Groq API (openai/gpt-oss-120b & LPU Inference)"]
     end
 
-    UI --> PredictSlider
-    PredictSlider --> Mic
-    Mic --> API
-    API --> Limiter --> Auth --> Crisis
-    Crisis -->|Crisis Detected| SafePath
-    Crisis -->|Safe Turn| Persona
-    Crisis -->|Finish Action| Feedback
-    Persona --> Groq
-    Feedback --> Groq
-    Persona --> Speaker
-    Speaker --> RealitySlider
-    RealitySlider --> Card
+    RehearseUI --> Sliders
+    RehearseUI --> STT
+    STT --> API
+    API --> Auth --> Limiter
+    Limiter --> RehearseGraph
+    Limiter --> ChatGraph
+    RehearseGraph --> Groq
+    ChatGraph --> Groq
+    ChatGraph --> Postgres
+    API --> Postgres
+    RehearseGraph --> TTS
+    TTS --> FeedbackCard
 ```
 
 ---
 
-## 3. Detailed File-by-File Changes
+## 3. Comprehensive List of Changed & Created Files
 
-### 1. `backend/rag/schemas.py` (Modified)
-**Location**: `VibeVerse-main/backend/rag/schemas.py`  
-**Purpose**: Defines Pydantic data schemas enforcing structured LLM outputs.
+```
+VibeVerse-main/
+├── backend/
+│   ├── app.py                     [MODIFIED] - added /api/rehearse endpoints & fixed root route
+│   └── rag/
+│       ├── schemas.py             [MODIFIED] - added RehearsalTurnResponse & RehearsalFeedback models
+│       └── rehearse_graph.py      [NEW]      - LangGraph roleplay simulation & feedback state machine
+│
+└── frontend/
+    ├── components/
+    │   └── navbar.tsx             [MODIFIED] - added Rehearse navigation link (desktop & mobile)
+    └── app/
+        └── rehearse/
+            └── page.tsx           [NEW]      - 4-stage interactive rehearsal UI (sliders, voice, feedback)
+```
 
-**Additions**:
+---
+
+## 4. Deep-Dive: File-by-File Technical Modifications
+
+### A. `backend/rag/schemas.py` (Modified)
+Added Pydantic data schemas to enforce structured outputs from the LLM:
 ```python
 class RehearsalTurnResponse(BaseModel):
     reply: str = Field(description="In-character response from the simulated persona.")
@@ -83,121 +103,99 @@ class RehearsalFeedback(BaseModel):
     one_tip: str = Field(description="One actionable, practical tip to improve confidence, tone, or effectiveness next time.")
     better_opening_line: str = Field(description="An improved or alternative opening sentence the student could say in this scenario.")
 ```
-**Why**: Ensures Groq's `gpt-oss-120b` returns structured, type-safe data that never breaks the frontend parser.
 
 ---
 
-### 2. `backend/rag/rehearse_graph.py` (New File)
-**Location**: `VibeVerse-main/backend/rag/rehearse_graph.py`  
-**Purpose**: Manages the complete rehearsal state machine via **LangGraph**.
-
-**Key Components**:
-- **5 Supported College Scenarios**:
-  - `canteen_order`: Campus Canteen Cashier during lunch rush.
-  - `ask_professor`: Professor after lecture packing up notes.
-  - `group_project`: Teammate in project discussion.
-  - `introduce_self`: Peer sitting alone before lecture.
-  - `presentation_qa`: Audience member asking a follow-up question.
-- **3 Difficulty Tones**:
-  - `gentle`: Patient, warm, supportive, gives plenty of time.
-  - `realistic`: Authentic college environment, natural conversational pace.
-  - `tough`: Fast-paced, rushed, or mildly skeptical.
-- **LangGraph State Nodes**:
-  1. `classify_intent`: Checks for self-harm or acute crisis.
-  2. `safe_response`: Returns verified Indian national mental health helpline **Tele-MANAS (14416 / 1800-89-14416)** and terminates immediately without generating persona text.
-  3. `generate_persona_turn`: Produces concise, natural spoken responses (1–3 sentences) in character.
-  4. `generate_feedback`: Evaluates the full transcript and outputs encouragement, one practical tip, and a polished opening line.
+### B. `backend/rag/rehearse_graph.py` (New File)
+Implements the entire social rehearsal state machine using **LangGraph**:
+1. **5 Real-World College Scenarios**:
+   - `canteen_order`: Canteen Cashier during busy lunch hour.
+   - `ask_professor`: Professor at their desk packing notes after class.
+   - `group_project`: Teammate in project topic/slide discussion.
+   - `introduce_self`: Classmate sitting nearby before lecture.
+   - `presentation_qa`: Audience member asking a follow-up question.
+2. **3 Difficulty Modes**:
+   - `gentle`: Supportive, warm, and patient.
+   - `realistic`: Authentic everyday college conversational pace.
+   - `tough`: Rushed, distracted, or mildly skeptical.
+3. **4 Graph Nodes**:
+   - `classify_intent`: Crisis detection safety gate.
+   - `safe_response`: Returns verified Indian national mental health helpline **Tele-MANAS (14416 / 1800-89-14416)** if acute crisis or self-harm is detected.
+   - `generate_persona_turn`: Produces in-character responses (1–3 sentences) matching scenario and difficulty.
+   - `generate_feedback`: Evaluates the full transcript and outputs positive encouragement, one actionable tip, and an improved opening line.
+4. **Robust Error Handling**: Added dictionary/object polymorphism and `try...except` fallbacks so the endpoint never crashes.
 
 ---
 
-### 3. `backend/app.py` (Modified)
-**Location**: `VibeVerse-main/backend/app.py`  
-**Purpose**: Exposes the REST API endpoints to the frontend.
-
-**Additions**:
-- `GET /api/rehearse/scenarios`: Returns available scenarios and initial starter lines.
-- `POST /api/rehearse`:
-  - Protected with `@login_required` (session cookie).
-  - Rate-limited with `@limiter.limit("30 per minute")`.
-  - Invokes `rehearsal_graph` and returns `{ reply, tone, crisis_flag, feedback }`.
+### C. `backend/app.py` (Modified)
+1. **Added Rehearsal API Routes**:
+   - `GET /api/rehearse/scenarios`: Returns scenario definitions and starter lines.
+   - `POST /api/rehearse`: Runs turn simulation or final feedback evaluation. Protected with `@login_required` and rate-limited with `@limiter.limit("30 per minute")`.
+2. **Fixed Root Route (`GET /`)**:
+   - Replaced crashing `render_template('index.html')` with a clean JSON health check (`{"status": "healthy", "service": "VibeVerse API"}`).
 
 ---
 
-### 4. `frontend/components/navbar.tsx` (Modified)
-**Location**: `VibeVerse-main/frontend/components/navbar.tsx`  
-**Purpose**: Navigation bar across the platform.
-
-**Additions**:
-- Imported `Mic` from `lucide-react`.
-- Added `{ href: "/rehearse", label: "Rehearse", icon: Mic }` to `navLinks`.
-- Included in both the desktop header and the mobile bottom navigation bar.
+### D. `frontend/components/navbar.tsx` (Modified)
+1. Imported `Mic` icon from `lucide-react`.
+2. Added `{ href: "/rehearse", label: "Rehearse", icon: Mic }` to `navLinks`.
+3. Updated both the desktop navigation bar and the mobile bottom dock (`slice(0, 7)`) so the Rehearse feature is accessible on all screen sizes.
 
 ---
 
-### 5. `frontend/app/rehearse/page.tsx` (New File)
-**Location**: `VibeVerse-main/frontend/app/rehearse/page.tsx`  
-**Purpose**: Complete, responsive 4-stage interactive user interface.
-
-**Detailed Workflow**:
+### E. `frontend/app/rehearse/page.tsx` (New File)
+A complete, responsive 4-stage interactive user interface:
 1. **Stage 1: Setup**:
-   - **Scenario Selection Cards**: Visual selector with custom emoji, titles, and context descriptions.
-   - **Difficulty Toggle**: Gentle, Realistic, Tough buttons with visual badges.
-   - **Pre-Rehearsal Predict Slider**: Interactive slider (1 to 10) with dynamic labels:
-     - 1–2: *Barely nervous (Breeze)*
-     - 3–4: *Mild butterflies (Manageable)*
-     - 5–6: *Noticeably anxious (Sweaty palms)*
-     - 7–8: *High anxiety (Heart pounding)*
-     - 9–10: *Extreme fear (Fight or flight)*
+   - Scenario selection cards with custom emoji, roles, and contexts.
+   - Difficulty toggle buttons (*Gentle*, *Realistic*, *Tough*).
+   - **Pre-Rehearsal Predict Slider**: Interactive slider (1 to 10) with dynamic psychological labels (*Breeze* $\rightarrow$ *Manageable* $\rightarrow$ *Sweaty palms* $\rightarrow$ *Heart pounding* $\rightarrow$ *Fight or flight*).
 2. **Stage 2: Rehearsal Dialogue**:
-   - Header displaying persona role, difficulty badge, and scenario context.
-   - Chat transcript area with persona and student speech bubbles.
-   - **Microphone Button (STT)**: Uses browser-native Web Speech API (`webkitSpeechRecognition`) with pulsing recording animation.
-   - **Persona Voice (TTS)**: Automatic or replayable speech output using `window.speechSynthesis` with mute/unmute control.
+   - Real-time chat dialogue with the persona.
+   - **Microphone Button (Speech-to-Text)**: Native Web Speech API with pulsing recording state.
+   - **Voice Output (Text-to-Speech)**: The persona speaks their response aloud via `speechSynthesis` with mute toggle and replay buttons.
    - "Finish & Get Feedback" button.
 3. **Stage 3: Reality Rating**:
    - Post-rehearsal slider: "How scary did it actually feel in reality? (1 to 10)".
 4. **Stage 4: Feedback & Predict vs Reality Result**:
-   - **Predict vs. Reality Comparison Card**: Side-by-side score visualization.
-   - **Calculated Anxiety Gap**:
-     - Example: *"You predicted 7/10, but reality was 4/10! That is a 3-point anxiety gap. Your brain anticipated danger that never materialized."*
-   - **Structured Feedback Cards**:
-     - ✨ *What Went Well*: Highlights courage, politeness, and clarity.
-     - 💡 *One Actionable Tip*: Practical advice for real-world execution.
-     - 🎯 *Try Saying This Out Loud*: Model opening sentence with a "Hear It" audio button.
+   - **Predict vs. Reality Comparison Card**: Visual side-by-side display of predicted fear vs actual difficulty.
+   - **Calculated Anxiety Gap**: Formulates the psychological insight (e.g., *"You predicted 7/10, but reality was 4/10! That is a 3-point anxiety gap. Your brain anticipated danger that never materialized."*).
+   - **Typed Feedback Cards**:
+     - ✨ *What Went Well*
+     - 💡 *One Actionable Tip for Next Time*
+     - 🎯 *Try Saying This Out Loud* (with a "Hear It" audio button)
    - "Practice Another Scenario" reset button.
 
 ---
 
-## 4. Key Engineering & Hackathon Highlights
+## 5. Live Production Verification Proof
 
-1. **Evidence-Based Psychology (CBT Exposure Therapy)**:
-   - Instead of just being an AI chatbot, VibeVerse acts as an **exposure therapy tool**. Comparing *Predict vs Reality* disconfirms cognitive distortions (catastrophizing).
-2. **Zero Additional Cost / Zero Latency Voice**:
-   - Uses native browser Web Speech APIs (`SpeechRecognition` & `SpeechSynthesis`). Does not require expensive Whisper or ElevenLabs API keys, making it resilient and 100% free.
-3. **Strict Safety Guardrail**:
-   - Every user turn is vetted for crisis-level distress. If triggered, the AI is bypassed entirely, immediately displaying the Indian Government's Tele-MANAS helpline.
-4. **State Machine over Linear Prompt**:
-   - LangGraph cleanly separates intent classification, persona simulation, and analytical feedback into distinct, typed nodes.
+The deployed system was tested end-to-end via automated HTTP requests against the live production environment (`https://frontend-two-sepia-yhuaaettcp.vercel.app`):
+
+| Test Case | Target Endpoint | Result | Real Output from Live Server |
+| :--- | :--- | :---: | :--- |
+| **User Sign-up** | `POST /api/register` | `200 OK` | `{"message": "Account created successfully.", "success": true}` |
+| **User Login** | `POST /api/login` | `200 OK` | `{"message": "Welcome back, test_hackathon_user_99!", "success": true}` |
+| **AI Empathetic Chat** | `POST /api/chat` | `200 OK` | **Reply**: *"Whoa, that sounds intense, feeling your hands shake right before the exam. Try taking three slow, deep breaths while gently pressing your fingertips together for a quick grounding moment. You’ve totally got this — just trust the preparation you put in."*<br>**Mood**: `nervous` |
+| **Rehearsal Roleplay** | `POST /api/rehearse` (turn) | `200 OK` | **Persona Reply**: *"Of course! Would you like white or whole‑grain bread for your sandwich, and which size water bottle you’d prefer?"*<br>**Tone**: `friendly, patient, warm` |
+| **Rehearsal Feedback** | `POST /api/rehearse` (feedback) | `200 OK` | Successfully generated structured encouragement, practical advice, and model opening line. |
+| **Vercel Proxy Rewrites** | `GET /api/rehearse/scenarios` | `200 OK` | All 5 scenarios returned via Vercel $\rightarrow$ Render proxy rewrite. |
 
 ---
 
-## 5. Live Hackathon Demo Script (2-Minute Walkthrough)
+## 6. How to Present in the Hackathon (2-Minute Demo Script)
 
-When presenting to judges:
-
-1. **The Problem (20s)**:
-   > *"Social anxiety makes introverted students avoid everyday college interactions — like asking a professor a doubt or ordering at the canteen. Avoidance reinforces the fear."*
-2. **The Solution (20s)**:
-   > *"VibeVerse provides Social Rehearsal Mode — an AI sandbox to test and disconfirm social fears using CBT exposure."*
+1. **The Hook (20s)**:
+   > *"Introverted and socially anxious students constantly avoid everyday campus interactions — ordering food, asking professors questions, or speaking in teams. In psychology, avoidance only strengthens social anxiety."*
+2. **The Innovation (20s)**:
+   > *"VibeVerse provides Social Rehearsal Mode — an AI sandbox using Cognitive Behavioral Therapy (CBT) exposure to help students test and disconfirm their social fears."*
 3. **The Live Demo (60s)**:
-   - Select **"Asking Professor a Question"** and set difficulty to **"Realistic"**.
-   - Move the **Predict Slider** to `8/10` (*"My brain thinks I'll stutter and look foolish"*).
-   - Click **Step into Scenario**. Show the persona starting the dialogue.
-   - Click the **Microphone** and speak: *"Excuse me professor, could you clarify slide 4?"*
-   - Listen to the persona speak back in real time.
+   - Go to **`/rehearse`**.
+   - Select **"Asking Professor a Question"** (Difficulty: *Realistic*).
+   - Set the **Predict Slider** to `8/10` (*"My brain says I'll stutter and freeze"*).
+   - Click **Step into the Scenario**.
+   - Tap the **Microphone** and speak: *"Excuse me professor, could you clarify slide 4?"*
+   - Let the judges hear the persona speak back aloud.
    - Click **Finish & Get Feedback**.
-   - Set the **Reality Slider** to `4/10` (*"It actually wasn't bad at all!"*).
-4. **The Big Reveal (20s)**:
-   - Point to the **Predict vs Reality Card**:
-   > *"Notice the 4-point Anxiety Gap. VibeVerse proves to students that their catastrophic forecast was 2x scarier than the actual event."*
-   - Point to the **Typed Feedback** and listen to the suggested opening line.
+   - Move the **Reality Slider** to `4/10` (*"In reality, it was manageable"*).
+4. **The Punchline (20s)**:
+   > *"Look at this 4-point Anxiety Gap. VibeVerse proves to students that their fear was 2x scarier than the actual event. Plus, it gives them instant coaching and an opening line to try in real life."*
